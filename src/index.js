@@ -1,4 +1,4 @@
-import ApiServicePixaby from './js/fetch';
+//import ApiServicePixaby from './js/fetch';
 import axios from "axios";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
@@ -14,7 +14,9 @@ const refs = {
 };
 
 let textSearch = "";
-let totalHits = '';
+//let totalHits = '';
+
+refs.btnLoad.classList.add('invisible');
 
 console.log(refs.btnLoad);
 
@@ -24,9 +26,9 @@ const API_Properties = 'image_type=photo&orientation=horizontal&safesearch=true&
 let page_counter = 1;
 
 
-async function getPicture(textSearch) {
+async function getPicture(textSearch, page_counter) {
  try {
-      const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${textSearch}&${API_Properties}`);
+      const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${textSearch}&${API_Properties}&page=${page_counter}`);
       console.log(response.data);
       return response.data;
   } catch (error) {
@@ -36,6 +38,7 @@ async function getPicture(textSearch) {
 
 refs.searchInput.addEventListener('input', onSearchInput);
 refs.searchButton.addEventListener("click", onSearchClick);
+refs.btnLoad.addEventListener("click", onLoadClick);
 
 async function onSearchClick(evt) {
     evt.preventDefault();
@@ -52,7 +55,7 @@ async function onSearchClick(evt) {
             return;
         } else {
             Notify.info(`Hooray! We found ${responce.totalHits} images.`);
-            refs.btnLoad.classList.remove('is-hidden');
+            refs.btnLoad.classList.remove('invisible');
             console.log(responce.hits);
             markupImages(responce.hits);
         }
@@ -64,7 +67,7 @@ async function onSearchClick(evt) {
 function onSearchInput() {
     refs.gallery.innerHTML = '';
     page_counter = 1;
-    refs.btnLoad.classList.add('is-hidden');
+    refs.btnLoad.classList.add('invisible');
 
 }
 
@@ -83,7 +86,7 @@ function markupImages(images) {
         ({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
             return `<div class="photo-card">
   <a class="image-link" href="${largeImageURL}">  
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+  <img class="photo-img" src="${webformatURL}" alt="${tags}"  loading="lazy" />
   </a>
   <div class="info">
     <p class="info-item">
@@ -104,6 +107,45 @@ function markupImages(images) {
     ).join('');
 
     refs.gallery.insertAdjacentHTML("beforeend", markup);
-    //lightboxGallery.refrech();
+    
+   
 
+    let galleryBox = new SimpleLightbox(".image-link", {});
+
+    //У библиотеки есть метод refresh() который обязательно нужно вызывать каждый раз после добавления новой группы карточек изображений.
+ SimpleLightbox.refresh;
+}
+
+async function onLoadClick() {
+    try {
+        page_counter += 1;
+        textSearch = refs.searchInput.value.trim();
+        const responce = await getPicture(textSearch, page_counter);
+
+        markupImages(responce.hits);
+        smoothScroll();
+        
+        const lastHits = responce.hits.length;
+        console.log('lastHits', lastHits);
+
+        if (lastHits < 40) {
+            Notify.info(`We're sorry, but you've reached the end of search results.`);
+            refs.btnLoad.classList.add('invisible');
+        } 
+    } catch (error) {
+        console.log(error);  
+    }
+} 
+
+//Прокрутка страницы после запроса и отрисовки каждой следующей группы изображений
+
+function smoothScroll() {
+    const { height: cardHeight } = document
+    .querySelector(".gallery")
+    .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+    top: cardHeight * 2,
+    behavior: "smooth",
+    });
 }

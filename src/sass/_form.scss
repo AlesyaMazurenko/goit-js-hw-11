@@ -1,13 +1,85 @@
+body {
+    background-color: rgb(246, 242, 238);
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+button {
+    background-color: rgb(6, 77, 143);
+    color: rgb(241, 245, 247);
+    border-color: rgb(2, 29, 41);
+    border-radius: 4px;
+}
+
+input {
+    border-color: rgb(2, 29, 41);
+    border-radius: 4px;
+
+}
+
 .search-form {
     display: block;
     height: 50px;
-    background-color: aquamarine;
+    background-color: rgb(137, 217, 242);
     text-align: center;
     padding-top: 15px;
 }
 
 .load-more {
-    //visibility: hidden;
-    margin: 10px 25px 10px auto;
-    
+    display: block;
+    margin: 20px 25px 20px auto;
+
+}
+
+.load-more:hover,
+.load-more:focus,
+.searchButton:hover,
+.searchButton:focus {
+    background-color: rgb(1, 30, 58);
+}
+
+.invisible {
+    display: none;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -30px;
+    margin-top: -30px;
+    margin-bottom: 20px;
+}
+
+.photo-card {
+    flex-basis: calc(100% / 4 - 30px);
+    margin-left: 30px;
+    margin-top: 30px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px #0aa5ff75;
+}
+
+.photo-img {
+    height: 250px;
+    width: 100%;
+    max-width: unset;
+    object-fit: cover;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
 }
