@@ -26,7 +26,7 @@ const API_Properties = 'image_type=photo&orientation=horizontal&safesearch=true&
 let page_counter = 1;
 
 
-async function getPicture(textSearch, page_counter) {
+async function getPicture(textSearch) {
  try {
       const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${textSearch}&${API_Properties}&page=${page_counter}`);
       console.log(response.data);
@@ -46,6 +46,7 @@ async function onSearchClick(evt) {
 
     textSearch = refs.searchInput.value;//.trim();
     console.log(textSearch);
+    page_counter = 1;
 
     try {
         const responce = await getPicture(textSearch);
@@ -53,10 +54,11 @@ async function onSearchClick(evt) {
         if (responce.totalHits === 0) {
             Notify.failure('Sorry, there are no images matching your search query. Please try again.');
             return;
-        } else {
+        } else { 
+            if (responce.totalHits > 40) {
+                refs.btnLoad.classList.remove('invisible');
+            }
             Notify.info(`Hooray! We found ${responce.totalHits} images.`);
-            refs.btnLoad.classList.remove('invisible');
-            console.log(responce.hits);
             markupImages(responce.hits);
         }
     } catch (error) {
@@ -120,7 +122,7 @@ async function onLoadClick() {
     try {
         page_counter += 1;
         textSearch = refs.searchInput.value.trim();
-        const responce = await getPicture(textSearch, page_counter);
+        const responce = await getPicture(textSearch);
 
         markupImages(responce.hits);
         smoothScroll();
